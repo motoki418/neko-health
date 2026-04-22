@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f9f4eb;
+  --paper-2: #f3ead7;
+  --card: #ffffff;
+  --ink: #1f1914;
+  --ink-muted: #6f6459;
+  --ink-faint: #9f948a;
+  --rule: #e5dcc8;
+  --food: #c55a35;
+  --food-bg: #f6e4d1;
+  --water: #2d6b6a;
+  --water-bg: #d7e2e1;
+  --gold: #a88650;
+
+  --font-display: var(--font-fraunces), "Fraunces", Georgia, serif;
+  --font-jp: var(--font-shippori), "Shippori Mincho", "Yu Mincho",
+    "Hiragino Mincho ProN", serif;
+  --font-body: var(--font-geist-sans), system-ui, -apple-system,
+    "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-food: var(--food);
+  --color-food-bg: var(--food-bg);
+  --color-water: var(--water);
+  --color-water-bg: var(--water-bg);
+  --color-gold: var(--gold);
+
+  --font-display: var(--font-display);
+  --font-jp: var(--font-jp);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  background-image:
+    radial-gradient(
+      at 12% 18%,
+      rgba(168, 134, 80, 0.05) 0px,
+      transparent 55%
+    ),
+    radial-gradient(
+      at 85% 82%,
+      rgba(197, 90, 53, 0.035) 0px,
+      transparent 55%
+    );
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0.14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--food);
+  color: var(--paper);
+}
+
+button, a {
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer components {
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  .eyebrow-lg {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-feature-settings: "lnum", "tnum", "ss01";
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .display-italic {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-feature-settings: "lnum", "tnum";
+  }
+
+  .jp-display {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .hairline {
+    border: 0;
+    height: 1px;
+    background: var(--rule);
+  }
+}
+
+.hero-number {
+  font-family: var(--font-display);
+  font-feature-settings: "lnum", "tnum";
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+
+.side-index {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-feature-settings: "lnum", "tnum";
+  color: var(--gold);
 }
