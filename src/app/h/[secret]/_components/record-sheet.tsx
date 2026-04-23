@@ -62,6 +62,16 @@ export default function RecordSheet({
     setCustom("");
   }
 
+  const modeHandleColor = kind === "food" ? "#c55a35" : "#2d6b6a";
+  const chipClass =
+    kind === "food"
+      ? "bg-food-bg text-food"
+      : "bg-water-bg text-water";
+  const saveBtnClass =
+    kind === "food"
+      ? "bg-food text-paper"
+      : "bg-water text-paper";
+
   return (
     <>
       {!open && toast && (
@@ -86,9 +96,12 @@ export default function RecordSheet({
             className="absolute bottom-0 inset-x-0 bg-card rounded-t-3xl p-5 pb-10 max-h-[88dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
               <div className="w-12" />
-              <div className="w-10 h-1 bg-rule rounded-full" />
+              <div
+                className="w-10 h-1 rounded-full transition-colors duration-300"
+                style={{ backgroundColor: modeHandleColor }}
+              />
               <button
                 type="button"
                 onClick={closeSheet}
@@ -113,7 +126,10 @@ export default function RecordSheet({
             )}
 
             <div className="mb-5">
-              <p className="eyebrow mb-3">どの子？</p>
+              <p className="eyebrow mb-3">
+                <span className="font-mono text-[9px] text-ink-faint mr-2 align-middle">01</span>
+                どの子？
+              </p>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {cats.map((c) => (
                   <button
@@ -122,7 +138,7 @@ export default function RecordSheet({
                     onClick={() => setCatId(c.id)}
                     className={`flex-shrink-0 rounded-2xl px-4 py-3 border-2 transition ${
                       c.id === catId
-                        ? "border-ink bg-paper-2"
+                        ? "border-ink bg-paper-2 shadow-sm"
                         : "border-rule"
                     }`}
                   >
@@ -134,29 +150,34 @@ export default function RecordSheet({
             </div>
 
             <div className="mb-5">
-              <p className="eyebrow mb-3">種類</p>
+              <p className="eyebrow mb-3">
+                <span className="font-mono text-[9px] text-ink-faint mr-2 align-middle">02</span>
+                種類
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setKind("food")}
-                  className={`rounded-xl py-3 font-semibold transition ${
+                  className={`rounded-xl py-3.5 font-semibold transition ${
                     kind === "food"
-                      ? "bg-food text-paper"
+                      ? "bg-food text-paper shadow-sm"
                       : "bg-food-bg text-food"
                   }`}
                 >
-                  🍚 食事 (g)
+                  🍚 食事
+                  <span className="text-xs font-normal ml-1 opacity-70">g</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setKind("water")}
-                  className={`rounded-xl py-3 font-semibold transition ${
+                  className={`rounded-xl py-3.5 font-semibold transition ${
                     kind === "water"
-                      ? "bg-water text-paper"
+                      ? "bg-water text-paper shadow-sm"
                       : "bg-water-bg text-water"
                   }`}
                 >
-                  💧 水 (ml)
+                  💧 水
+                  <span className="text-xs font-normal ml-1 opacity-70">ml</span>
                 </button>
               </div>
             </div>
@@ -192,7 +213,10 @@ export default function RecordSheet({
             )}
 
             <div className="mb-5">
-              <p className="eyebrow mb-3">量 (タップで即保存)</p>
+              <p className="eyebrow mb-3">
+                <span className="font-mono text-[9px] text-ink-faint mr-2 align-middle">03</span>
+                量 (タップで即保存)
+              </p>
               <div className="grid grid-cols-5 gap-2">
                 {chips.map((n) => (
                   <button
@@ -200,10 +224,10 @@ export default function RecordSheet({
                     type="button"
                     disabled={isPending || !catId}
                     onClick={() => submit(n)}
-                    className="rounded-xl bg-paper-2 py-4 font-bold text-lg text-ink active:scale-95 transition disabled:opacity-40"
+                    className={`rounded-xl py-5 font-bold text-xl active:scale-90 transition disabled:opacity-40 ${chipClass}`}
                   >
                     {n}
-                    <span className="text-xs font-normal ml-0.5 text-ink-muted">{unit}</span>
+                    <span className="text-xs font-normal ml-0.5 opacity-50">{unit}</span>
                   </button>
                 ))}
               </div>
@@ -227,7 +251,7 @@ export default function RecordSheet({
                     const n = parseInt(custom, 10);
                     if (Number.isFinite(n) && n > 0) submit(n);
                   }}
-                  className="rounded-xl bg-ink text-paper font-semibold px-5 disabled:opacity-40 transition"
+                  className={`rounded-xl font-semibold px-5 disabled:opacity-40 transition ${saveBtnClass}`}
                 >
                   保存
                 </button>

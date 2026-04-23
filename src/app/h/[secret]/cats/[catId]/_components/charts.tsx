@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  LabelList,
 } from "recharts";
 
 type DailyRow = { date: string; label: string; food: number; water: number };
@@ -99,12 +98,12 @@ function ChartBlock({
           <span className="ml-1 opacity-60 tracking-normal">({unit})</span>
         </span>
       </div>
-      <div className="h-64 rounded-2xl border border-rule p-3 bg-paper-2">
+      <div className="h-48 rounded-2xl border border-rule p-3 bg-paper-2">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 12, left: -10, bottom: 4 }}
-            barCategoryGap="22%"
+            margin={{ top: 8, right: 8, left: -10, bottom: 0 }}
+            barCategoryGap="24%"
           >
             <CartesianGrid
               strokeDasharray="3 3"
@@ -113,17 +112,15 @@ function ChartBlock({
             />
             <XAxis
               dataKey="label"
-              fontSize={11}
+              fontSize={12}
               tickLine={false}
               axisLine={{ stroke: COLOR_GRID }}
               interval={0}
-              angle={-35}
-              textAnchor="end"
-              height={56}
+              height={24}
               tick={{ fill: "#6f6459" }}
             />
             <YAxis
-              fontSize={11}
+              fontSize={10}
               tickLine={false}
               axisLine={false}
               domain={[0, yMax]}
@@ -142,15 +139,7 @@ function ChartBlock({
               }}
               formatter={(value) => [`${value} ${unit}`, label]}
             />
-            <Bar dataKey={dataKey} fill={color} radius={[6, 6, 0, 0]} maxBarSize={44}>
-              <LabelList
-                dataKey={dataKey}
-                position="top"
-                fontSize={11}
-                fill="#9f948a"
-                formatter={(v) => (typeof v === "number" && v > 0 ? String(v) : "")}
-              />
-            </Bar>
+            <Bar dataKey={dataKey} fill={color} radius={[5, 5, 0, 0]} maxBarSize={36} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -160,14 +149,8 @@ function ChartBlock({
 
 function toDowLabel(dateKey: string): string {
   const d = new Date(`${dateKey}T00:00:00+09:00`);
-  const md = new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    month: "numeric",
-    day: "numeric",
-  }).format(d);
-  const dow = new Intl.DateTimeFormat("ja-JP", {
+  return new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
     weekday: "narrow",
   }).format(d);
-  return `${md}(${dow})`;
 }
