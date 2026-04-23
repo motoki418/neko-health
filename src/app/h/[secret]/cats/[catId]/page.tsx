@@ -8,6 +8,7 @@ import Charts from "./_components/charts";
 import RecordList from "./_components/record-list";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function CatPage({
   params,

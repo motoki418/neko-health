@@ -1,5 +1,7 @@
 import { assertHousehold } from "@/lib/auth";
 
+export const runtime = "edge";
+
 export default async function SecretLayout({
   children,
   params,
