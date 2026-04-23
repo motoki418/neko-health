@@ -1,20 +1,36 @@
 # neko-health
 
-飼い猫のご飯量・飲水量を夫婦で共有して健康管理する Web アプリ。
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![Vercel](https://img.shields.io/badge/Vercel-Hobby-black?logo=vercel)
+![Supabase](https://img.shields.io/badge/Supabase-Free-3ECF8E?logo=supabase)
 
-## 機能
+妻と飼い猫2匹（メルク・エイラ）のご飯・飲水量を3タップで記録する個人 Web アプリ。現在運用中。
 
-- ドライ・ウェット食事と飲水量を3タップで記録
-- 日次・週次バーグラフで摂取傾向を確認
-- 記録の編集・削除
-- 秘密 URL 共有で家族と使える（ログイン不要）
+![screenshot](docs/screenshot.png)
+
+## 設計上の判断
+
+**認証なし・秘密 URL 方式**
+個人2人用途で JWT/OAuth はオーバーエンジニアリング。nanoid(24) の推測不可能な URL をパスに埋め込み、家族外アクセスをブロックする。実装コストを最小化しながら十分なセキュリティを確保。
+
+**3タップ制約を最優先**
+「スマホから3タップ以内で1回の記録が完了する」を設計の起点に置き、UI・データモデル・UX をそこから逆算した。ボトムシートを閉じない設計（連続記録のため）もこの制約から導出。
+
+**Edge Runtime でコールドスタートを排除**
+Node.js サーバーレス関数のコールドスタート（1〜3秒）がスマホ利用時のストレスになっていたため、Edge Runtime（≈0ms）に移行。supabase-js が Web 標準 API のみで動作するため移行は無停止で完了。
+
+**RLS 無効・アプリ層で認可を一元化**
+secret ベースの RLS を書くと DB とアプリ層で認可ロジックが分散する。`assertHousehold()` に集約し、全 Server Action の冒頭で呼ぶことで一貫性を担保。
+
+**0円運用**
+Supabase Free + Vercel Hobby の範囲内で設計。生涯レコード数の試算は ~20MB で Free 枠に収まることを確認済み。
 
 ## 技術スタック
 
 - **Frontend**: Next.js 16 (App Router, Edge Runtime) + Tailwind CSS v4
 - **DB**: Supabase (PostgreSQL)
 - **Hosting**: Vercel (Hobby)
-- **認証**: なし（nanoid(24) の秘密 URL で代替）
+- **フォント**: Fraunces / Shippori Mincho / Geist
 
 ## セットアップ
 
@@ -28,7 +44,7 @@
 node -e "console.log(require('nanoid').nanoid(24))"
 ```
 
-4. seed.sql の `insert into cats` を自分の猫の数だけ書き換えて実行
+4. `seed.sql` の `insert into cats` を自分の猫の数だけ書き換えて実行
 
 ### 2. 環境変数
 
@@ -45,7 +61,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...   # Settings → API → service_role
 npm run dev
 ```
 
-ブラウザで `http://localhost:3000/h/<secret_slug>` を開く。
+`http://localhost:3000/h/<secret_slug>` を開く。
 
 ## デプロイ (Vercel)
 
@@ -61,5 +77,3 @@ npx vercel --prod
 ```
 
 家族には `https://<your-app>.vercel.app/h/<secret_slug>` を共有する。
-
-Preview deploy は secret 漏洩防止のため Vercel の Deployment Protection で保護することを推奨。
