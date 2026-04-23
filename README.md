@@ -2,7 +2,19 @@
 
 飼い猫のご飯量・飲水量を夫婦で共有して健康管理する Web アプリ。
 
-設計詳細は [docs/design.md](docs/design.md) を参照。
+## 機能
+
+- ドライ・ウェット食事と飲水量を3タップで記録
+- 日次・週次バーグラフで摂取傾向を確認
+- 記録の編集・削除
+- 秘密 URL 共有で家族と使える（ログイン不要）
+
+## 技術スタック
+
+- **Frontend**: Next.js 16 (App Router, Edge Runtime) + Tailwind CSS v4
+- **DB**: Supabase (PostgreSQL)
+- **Hosting**: Vercel (Hobby)
+- **認証**: なし（nanoid(24) の秘密 URL で代替）
 
 ## セットアップ
 
@@ -37,8 +49,17 @@ npm run dev
 
 ## デプロイ (Vercel)
 
-1. GitHub に push
-2. Vercel で import、同じ環境変数を Production に設定
-3. 家族には `https://<your-app>.vercel.app/h/<secret_slug>` を共有
+```bash
+# 環境変数を追加
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL production
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL preview
+npx vercel env add SUPABASE_SERVICE_ROLE_KEY production
+npx vercel env add SUPABASE_SERVICE_ROLE_KEY preview
+
+# 本番デプロイ
+npx vercel --prod
+```
+
+家族には `https://<your-app>.vercel.app/h/<secret_slug>` を共有する。
 
 Preview deploy は secret 漏洩防止のため Vercel の Deployment Protection で保護することを推奨。
