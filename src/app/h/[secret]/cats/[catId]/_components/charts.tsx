@@ -1,21 +1,12 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-
 type DailyRow = { date: string; label: string; food: number; water: number };
 type WeeklyRow = { week: string; label: string; food: number; water: number };
 
 const COLOR_FOOD = "#c55a35";
 const COLOR_WATER = "#2d6b6a";
 const COLOR_GRID = "#e5dcc8";
+const CHART_HEIGHT = 144;
 
 export default function Charts({
   daily,
@@ -82,6 +73,9 @@ function ChartBlock({
 }) {
   const max = Math.max(1, ...data.map((d) => (d[dataKey] as number) || 0));
   const yMax = Math.ceil((max * 1.25) / 10) * 10;
+  const yTicks = [yMax, Math.round(yMax / 2), 0];
+  const columns =
+    data.length > 0 ? `repeat(${data.length}, minmax(0, 1fr))` : "1fr";
 
   return (
     <div>
@@ -98,50 +92,74 @@ function ChartBlock({
           <span className="ml-1 opacity-60 tracking-normal">({unit})</span>
         </span>
       </div>
-      <div className="h-48 rounded-2xl border border-rule p-3 bg-paper-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={{ top: 8, right: 8, left: -10, bottom: 0 }}
-            barCategoryGap="24%"
+      <div className="rounded-2xl border border-rule bg-paper-2 px-3 pb-3 pt-4">
+        <div className="flex gap-2">
+          <div
+            className="flex w-8 flex-col justify-between text-right font-mono text-[10px] leading-none text-muted"
+            style={{ height: CHART_HEIGHT }}
+            aria-hidden="true"
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={COLOR_GRID}
-              vertical={false}
-            />
-            <XAxis
-              dataKey="label"
-              fontSize={12}
-              tickLine={false}
-              axisLine={{ stroke: COLOR_GRID }}
-              interval={0}
-              height={24}
-              tick={{ fill: "#6f6459" }}
-            />
-            <YAxis
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              domain={[0, yMax]}
-              width={36}
-              tick={{ fill: "#9f948a" }}
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(168,134,80,0.08)" }}
-              contentStyle={{
-                borderRadius: 12,
-                border: `1px solid ${COLOR_GRID}`,
-                backgroundColor: "#f9f4eb",
-                fontSize: 13,
-                padding: "6px 10px",
-                color: "#1f1914",
-              }}
-              formatter={(value) => [`${value} ${unit}`, label]}
-            />
-            <Bar dataKey={dataKey} fill={color} radius={[5, 5, 0, 0]} maxBarSize={36} />
-          </BarChart>
-        </ResponsiveContainer>
+            {yTicks.map((tick) => (
+              <span key={tick}>{tick}</span>
+            ))}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div
+              className="relative border-b"
+              style={{ borderColor: COLOR_GRID, height: CHART_HEIGHT }}
+            >
+              <div
+                className="absolute inset-x-0 top-0 border-t border-dashed"
+                style={{ borderColor: COLOR_GRID }}
+              />
+              <div
+                className="absolute inset-x-0 top-1/2 border-t border-dashed"
+                style={{ borderColor: COLOR_GRID }}
+              />
+              <div
+                className="relative z-10 grid h-full items-end gap-2"
+                style={{ gridTemplateColumns: columns }}
+              >
+                {data.map((row) => {
+                  const value = Number(row[dataKey]) || 0;
+                  const height = Math.max(0, Math.round((value / yMax) * 100));
+
+                  return (
+                    <div
+                      key={row.label}
+                      className="flex h-full items-end justify-center"
+                      title={`${row.label}: ${value} ${unit}`}
+                    >
+                      <div
+                        className="w-full max-w-9 rounded-t-[5px]"
+                        style={{
+                          backgroundColor: color,
+                          height: `${height}%`,
+                          minHeight: value > 0 ? 4 : 0,
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div
+              className="mt-2 grid gap-2"
+              style={{ gridTemplateColumns: columns }}
+            >
+              {data.map((row) => (
+                <div key={row.label} className="min-w-0 text-center">
+                  <div className="text-[11px] leading-none text-muted">
+                    {row.label}
+                  </div>
+                  <div className="mt-1 truncate font-mono text-[10px] leading-none text-ink">
+                    {Number(row[dataKey]) || 0}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

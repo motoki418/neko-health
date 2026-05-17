@@ -1,0 +1,7 @@
+trustPolicyExclude:
+  - 'eslint-import-resolver-typescript@3.10.1'
+  - 'undici-types@6.21.0'
+
+allowBuilds:
+  sharp: true
+  unrs-resolver: true

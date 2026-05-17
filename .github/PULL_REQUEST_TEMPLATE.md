@@ -24,8 +24,8 @@
 
 ## Test plan
 
-- [ ] `npm run lint`
-- [ ] `npm run build`
+- [ ] `pnpm run lint`
+- [ ] `pnpm run build`
 
 ## Not verified
 
