@@ -11,8 +11,8 @@
 
 ## 技術前提
 
-- Next.js 16 / React 19 系のアプリ。
-- 古いNext.js知識で判断せず、必要に応じて `node_modules/next/dist/docs/` と既存実装を確認する。
+- Next.js 16.2.4 / React 19 系の個人用Webアプリ。
+- 古いNext.js知識で判断せず、必要に応じて `node_modules/next/dist/docs/` と既存実装を確認する。非推奨通知も確認する。
 - `params` は Promise。`const { secret } = await params` の形を使う。
 - `body` に `flex flex-col` を安易に付けない。`max-w-2xl mx-auto` と組み合わさるとレイアウトが潰れる。
 - パッケージ管理は `pnpm@11.0.8` を正とし、lockfile は `pnpm-lock.yaml` のみ使う。`package-lock.json` は戻さない。
@@ -75,6 +75,7 @@
 ## 承認が必要な操作
 
 - Vercel 本番デプロイ、production promotion、production環境変数変更は明示承認なしに行わない。
+- READMEのVercel手順にある本番デプロイ、`npx vercel --prod`、production promotion、production環境変数変更は家族利用中の本番環境に影響するため、PR・報告ではdeploy影響とrollbackを明記する。
 - commit、push、deploy、publish、mail、GitHub Actions 実行、Issue/PR作成は明示承認なしに行わない。
 
 ## セキュリティ
