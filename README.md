@@ -58,7 +58,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...   # Settings → API → service_role
 ### 3. 起動
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 `http://localhost:3000/h/<secret_slug>` を開く。
