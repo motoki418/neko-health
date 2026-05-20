@@ -1,6 +1,9 @@
 trustPolicyExclude:
   - 'eslint-import-resolver-typescript@3.10.1'
   - 'undici-types@6.21.0'
+  # Required by eslint-config-next@16.2.6 via eslint-plugin-react@7.37.5.
+  # Remove once the dependency chain no longer resolves semver@6.3.1 without provenance.
+  - 'semver@6.3.1'
 
 allowBuilds:
   sharp: true
