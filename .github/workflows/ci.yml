@@ -22,6 +22,10 @@ jobs:
 
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      # next build は src/lib/supabase.ts の env 存在チェックを通すためダミー値が必要。
+      # dynamic route のため build 時に実際の DB 接続はしない。実キーは Vercel 側に設定済みで、ここに本物は置かない。
+      NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
+      SUPABASE_SERVICE_ROLE_KEY: "placeholder-service-role-key-for-ci-build-only"
 
     steps:
       - name: Checkout
