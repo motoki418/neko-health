@@ -5,8 +5,6 @@ import { startOfTodayJst } from "@/lib/time";
 import RecordSheet from "./_components/record-sheet";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
-
 export default async function DashboardPage({
   params,
 }: {
