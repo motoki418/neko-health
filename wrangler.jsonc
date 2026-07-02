@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "neko-health",
+  // account_id は非機密（CI で CLOUDFLARE_ACCOUNT_ID secret を別途要求しないため明記）
+  "account_id": "c894d17180e33dcc0f93a7f4477d7b5f",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "NEXTJS_ENV": "production",
+    // URL は非鍵。SUPABASE_SERVICE_ROLE_KEY は全権キーのため必ず wrangler secret put
+    // で登録し、ここにも repo にも絶対に書かない（public repo）。
+    "NEXT_PUBLIC_SUPABASE_URL": "https://jgrppyhvjgnhbwkieraf.supabase.co"
+  }
+}

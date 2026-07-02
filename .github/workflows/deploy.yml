@@ -1,0 +1,77 @@
+name: Deploy
+
+# main への push を Cloudflare Workers（OpenNext）への本番反映トリガーにする。
+# Vercel Git 連携廃止後の唯一の自動デプロイ経路（カットオーバー原則: 正の経路は1本）。
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Worker (OpenNext)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # CLOUDFLARE_API_TOKEN 未設定の間はデプロイを安全にスキップする（main を赤くしないため）。
+      - name: Check Cloudflare token
+        id: gate
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CF_TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::CLOUDFLARE_API_TOKEN 未設定のため Worker デプロイをスキップしました。リポジトリ Secrets に登録すると有効化されます。"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup pnpm
+        if: steps.gate.outputs.ready == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.8
+
+      - name: Setup Node
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        if: steps.gate.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # NEXT_PUBLIC_SUPABASE_URL は build 時にクライアントへ焼き込まれる（非鍵の URL）。
+      # SUPABASE_SERVICE_ROLE_KEY は supabase.ts の import 時存在チェック用のダミー
+      # （build 中に DB 接続はしない。実キーは Worker 側 wrangler secret のみに置く）。
+      - name: Build (OpenNext)
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://jgrppyhvjgnhbwkieraf.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key-for-ci-build-only
+        run: pnpm cf:build
+
+      - name: Deploy to Cloudflare Workers
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm cf:deploy
+
+      # デプロイ直後の読み取り専用スモーク。壊れたデプロイを green にしない。
+      - name: Smoke test
+        if: steps.gate.outputs.ready == 'true'
+        run: node scripts/smoke.mjs "https://neko-health.snkrs418.workers.dev"
